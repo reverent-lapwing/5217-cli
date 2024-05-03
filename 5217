@@ -1,0 +1,52 @@
+#!/bin/bash
+
+this_dir="$(dirname "${0}")"
+
+praca_dur=${1:-52}
+przerwa_dur=${2:-17}
+
+function praca {
+
+	for i in `seq 0 $(($praca_dur - 1))`; do
+    clear
+    tput cup 0
+    tput cub 0
+    echo -en "Pozostało $(($praca_dur - $i)) minut pracy      \r"
+    read -t 60
+    [ $? -eq 0 ] && break
+done
+
+echo -en "Przerwa                                      \r"
+
+/usr/bin/notify-send -t 3600000  "Czas na przerwę"
+mpg123 -n350 ${this_dir}/Airport\ Station\ Announcement\ Chime\ Sound\ Effects.mp3 &> /dev/null
+espeak -v polish "Czas. na. przerwę. Czas. na. przerwę." &> /dev/null
+
+}
+
+function przerwa {
+
+	for i in `seq 0 $(($przerwa_dur - 1))`; do
+    clear
+    tput cup 0
+    tput cub 0
+
+    echo -en "Pozostało $(($przerwa_dur - $i)) minut przerwy     \r"
+    read -t 60
+    [ $? -eq 0 ] && break
+done
+
+echo -en "Praca                                        \r"
+
+/usr/bin/notify-send -t 3600000  "Koniec przerwy"
+mpg123 -n350 ${this_dir}/Airport\ Station\ Announcement\ Chime\ Sound\ Effects.mp3 &> /dev/null
+espeak -v polish "Koniec. przerwy. Koniec. przerwy." &> /dev/null
+
+}
+
+while true; do
+    praca
+    read
+    przerwa
+    read
+done
